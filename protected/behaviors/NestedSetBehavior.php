@@ -19,6 +19,7 @@ class NestedSetBehavior extends CActiveRecordBehavior
 	public $leftAttribute='lft';
 	public $rightAttribute='rgt';
 	public $levelAttribute='level';
+    public $urlAttribute='url';
 	private $_ignoreEvent=false;
 	private $_deleted=false;
 	private $_id;

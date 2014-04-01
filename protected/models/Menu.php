@@ -43,12 +43,16 @@ class Menu extends EActiveRecord
     public function behaviors()
     {
         return array(
-            'nestedSetBehavior'=>array(
+            'NestedSetBehavior'=>array(
                 'class'=>'application.behaviors.NestedSetBehavior',
                 'leftAttribute'=>'lft',
                 'rightAttribute'=>'rgt',
                 'levelAttribute'=>'level',
             ),
+            'category'=>array(
+                'class'=>'ECategoryNSTreeBehavior',
+                'titleAttribute'=>'name',
+            )
         );
     }
 
@@ -152,5 +156,10 @@ class Menu extends EActiveRecord
         if ( $this->node )
             return $this->node->getUrl();
         return '';
+    }
+
+    public function getLinkActive()
+    {
+        return false;
     }
 }

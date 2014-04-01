@@ -159,3 +159,8 @@ span.offset {
         padding-top: 0;
     }
 }
+
+.indent {
+    display: inline-block;
+    width: 20px;
+}

@@ -10,14 +10,14 @@
                 <?php echo $content; ?>
             </div>
             <div class="span3">
-                <div class="well sidebar">
-                    <?php
-                        $this->widget('bootstrap.widgets.TbNav', array(
+                <?php if ( !empty($this->menu) ): ?>
+                    <div class="well sidebar">
+                        <?php $this->widget('bootstrap.widgets.TbNav', array(
                             'type' => TbHtml::NAV_TYPE_LIST,
                             'items' => $this->menu
-                        ));
-                    ?>
-                </div>
+                        )); ?>
+                    </div>
+                <?php endif ?>
             </div>
         </div>
     </div>

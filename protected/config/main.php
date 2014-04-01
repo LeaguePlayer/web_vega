@@ -5,19 +5,19 @@
 return array_replace_recursive(
     array(
         'basePath'=>dirname(__FILE__).DIRECTORY_SEPARATOR.'..',
-        'name'=>'Каркас приложения',
+        'name'=>'Вега',
         'language' => 'ru',
-        'theme'=>'default',
+        'theme'=>'vega',
         // preloading 'log' component
         'preload'=>array(
-            'log',
+//            'log',
             'config',
         ),
         // autoloading model and component classes
         'import'=>array(
             'application.models.*',
             'application.components.*',
-            //'application.behaviors.*',
+            'application.behaviors.*',
         ),
         'aliases'=>array(
             'appext'=>'application.extensions',
@@ -35,7 +35,7 @@ return array_replace_recursive(
                 'registrationUrl' => array('/user/registration'),
                 'recoveryUrl' => array('/user/recovery'),
                 'loginUrl' => array('/user/login'),
-                'returnUrl' => array('/user/profile'),
+                'returnUrl' => array('/admin'),
                 'returnLogoutUrl' => array('/user/login'),
             ),
         ),
@@ -87,13 +87,14 @@ return array_replace_recursive(
                     'admin'=>'admin/structure',
                     'admin/<controller:!config>' => 'admin/<controller>/list',
                     '/'=>'site/index',
-                    '<controller:page>/<url:[\w_-]+>' => '<controller>/view',
+                    '<controller:page|category>/<url:[\w_-]+>' => '<controller>/view',
                 ),
             ),
             'clientScript'=>array(
                 'class'=>'EClientScript',
                 'scriptMap'=>array(
-                    //'jquery.min.js'=>'//ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js',
+                    'jquery.js'=>'http://code.jquery.com/jquery-1.10.2.js',
+                    'jquery.min.js'=>'http://code.jquery.com/jquery-1.10.2.min.js',
                 ),
             ),
             'date' => array(

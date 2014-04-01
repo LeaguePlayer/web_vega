@@ -17,7 +17,7 @@ class SiteHelper {
 			"с" => "s", "т" => "t", "у" => "u", "ф" => "f", "х" => "h",
 			"ц" => "ts", "ч" => "ch", "ш" => "sh", "щ" => "sch", "ъ" => "y",
 			"ы" => "yi", "ь" => "", "э" => "e", "ю" => "yu", "я" => "ya",
-			" " => "_", "." => "_", "/" => "-", "(" => "", ")" => "",
+			" " => "_", "." => "_", "/" => "-", "(" => "", ")" => ""
 		);
 		return strtr($str, $tr);
 	}
@@ -119,5 +119,11 @@ class SiteHelper {
 	    $message = wordwrap($message, 70);
 	    $message = str_replace("\n.", "\n..", $message);
         return mail($to,'=?UTF-8?B?'.base64_encode($subject).'?=',$message,$headers);
+    }
+
+    public static function getmicrotime()
+    {
+        list($usec, $sec) = explode(" ",microtime());
+        return ((float)$usec + (float)$sec);
     }
 }

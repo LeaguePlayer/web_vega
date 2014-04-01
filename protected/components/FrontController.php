@@ -5,9 +5,12 @@
  */
 class FrontController extends Controller
 {
-    public $layout='//layouts/simple';
+    public $layout='//layouts/main';
     public $menu=array();
     public $breadcrumbs=array();
+
+    // Массив категорий на текущей странице, включая вложенные
+    public $categories=array();
 
     public function init() {
         parent::init();
@@ -19,59 +22,24 @@ class FrontController extends Controller
         return $this->route == 'site/index';
     }
 
-    public function beforeRender($view)
+    public function buildMenu($parent = null)
     {
-        $this->renderPartial('//layouts/clips/_main_menu');
-        return parent::beforeRender($view);
+        if ( !$parent )
+            $parent = Menu::model()->roots()->find();
+        $this->menu = Menu::model()->getMenuList(1, $parent);
     }
 
-    public function buildMenu($currentNode = null)
+    public function buildCategories($current_category = null)
     {
-        $root = Menu::model()->cache(3600)->findByAttributes(array(
-            'level' => 1
-        ));
-        if ( !$root ) return;
-        $criteria = new CDbCriteria();
-        $criteria->compare('status', 1);
-        $criteria->addCondition('level<4');
+        $this->categories = Category::model()->getMenuList(2, $current_category);
+    }
 
-        $items = $root->descendants()->cache(3600)->findAll($criteria);
-        $mainActiveId = 0;
-        $subActiveId = 0;
-
-        if ( $currentNode ) {
-            foreach ( $items as $item ) {
-                if ( $item->level == 2 && $item->node_id == $currentNode->id ) {
-                    $mainActiveId = $item->id;
-                    break;
-                }
-                if ( $item->level == 3 && $item->node_id == $currentNode->id ) {
-                    $subActiveId = $item->id;
-                    $mainActiveId = $item->parent_id;
-                    break;
-                }
-            }
+    protected function beforeAction($action)
+    {
+        if ( parent::beforeAction($action) ) {
+            $this->buildCategories();
+            return true;
         }
-
-        foreach ( $items as $item ) {
-            if ( $item->level == 2 ) {
-                $this->mainMenu[] = array(
-                    'active' => $item->id === $mainActiveId,
-                    'label' => $item->name,
-                    'url' => $item->getUrl(),
-                    'class' => $item->item_class,
-                );
-                continue;
-            }
-            if ( $item->level == 3 && $item->parent_id === $mainActiveId ) {
-                $this->subMenu[] = array(
-                    'active' => $item->id === $subActiveId,
-                    'label' => $item->name,
-                    'url' => $item->getUrl(),
-                    'class' => $item->item_class,
-                );
-                continue;
-            }
-        }
+        return false;
     }
 }

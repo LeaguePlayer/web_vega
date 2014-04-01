@@ -13,7 +13,7 @@ class Controller extends CController
      * @var string the default layout for the controller view. Defaults to '//layouts/column1',
      * meaning using a single column layout. See 'protected/views/layouts/column1.php'.
      */
-    public $layout='//layouts/simple';
+    public $layout='//layouts/main';
 
     /**
      * @var array context menu items. This property will be assigned to {@link CMenu::items}.
@@ -75,11 +75,6 @@ class Controller extends CController
         return $this->assetsUrl;
     }
 
-    public function beforeRender($view)
-    {
-        $this->renderPartial('//layouts/clips/_main_menu');
-        return parent::beforeRender($view);
-    }
 
     /**
      * Loads the requested data model.

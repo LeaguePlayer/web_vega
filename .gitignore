@@ -1,12 +1,14 @@
 #for capistrano
-/config/
 Capfile
 #---
 
 .idea
 
 framework
-/protected/config/environment/params-local.php
+/protected/config/overrides/environment.php
+/protected/config/overrides/local.php
+/protected/config/overrides/params.php
+
 /uploads
 /gallery
 *~
