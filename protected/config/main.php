@@ -10,7 +10,7 @@ return array_replace_recursive(
         'theme'=>'vega',
         // preloading 'log' component
         'preload'=>array(
-//            'log',
+            'log',
             'config',
         ),
         // autoloading model and component classes
@@ -83,11 +83,12 @@ return array_replace_recursive(
                 'showScriptName'=>false,
                 'urlFormat'=>'path',
                 'rules'=>array(
-                    'gii'=>'gii',
-                    'admin'=>'admin/structure',
-                    'admin/<controller:!config>' => 'admin/<controller>/list',
-                    '/'=>'site/index',
-                    '<controller:page|category>/<url:[\w_-]+>' => '<controller>/view',
+					'gii'=>'gii',
+					'/'=>'site/index',
+					'admin/catalog' => 'admin/catalog/index',
+					'<controller:page|category>/<url:[\w_-]+>' => '<controller>/view',
+					'admin'=>'admin/structure',
+					'admin/<controller:!config|>' => 'admin/<controller>/list',
                 ),
             ),
             'clientScript'=>array(

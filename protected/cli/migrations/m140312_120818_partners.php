@@ -15,7 +15,8 @@ class m140312_120818_partners extends CDbMigration
         $this->_checkTables();
  
         $this->createTable('{{partners}}', array(
-            'id' => "VARCHAR(40) PRIMARY KEY COMMENT 'GUID'",
+            'id' => "pk",
+            'guid' => "VARCHAR(40) UNIQUE COMMENT 'GUID'",
             'name' => "VARCHAR(40)",
             'full_name' => "string",
             'inn' => "VARCHAR(20)",

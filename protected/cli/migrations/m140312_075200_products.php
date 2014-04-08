@@ -15,7 +15,8 @@ class m140312_075200_products extends CDbMigration
         $this->_checkTables();
  
         $this->createTable('{{products}}', array(
-            'id' => "VARCHAR(40) PRIMARY KEY COMMENT 'GUID товара'",
+            'id' => "pk",
+            'guid' => "VARCHAR(40) UNIQUE COMMENT 'GUID товара'",
             'article' => "VARCHAR(40) COMMENT 'Артикул товара'",
             'name' => "string COMMENT 'Наименование товара'",
             'translit_name' => "string",

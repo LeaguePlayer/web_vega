@@ -11,7 +11,10 @@
             $menuItems = array(
                 array('label'=>'Разделы сайта', 'url'=>array('/admin/structure')),
                 array('label'=>'Меню сайта', 'url'=>array('/admin/menu')),
-                array('label'=>'Материалы', 'url'=>array('/admin/material')),
+				array('label'=>'Товары', 'items'=>array(
+					array('label'=>'Каталог', 'url'=>array('/admin/catalog')),
+					array('label'=>'Атрибуты товаров', 'url'=>array('/admin/productAttribute')),
+				)),
                 array('label'=>'Настройки', 'url'=>array('/admin/config')),
             );
         ?>

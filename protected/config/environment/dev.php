@@ -12,18 +12,27 @@ return array(
         ),
     ),
     'components' => array(
+		'db'=>array(
+			'enableProfiling'=>true,
+			'enableParamLogging' => true,
+		),
         'log'=>array(
             'class'=>'CLogRouter',
             'routes'=>array(
-                array(
-                    'class'=>'CFileLogRoute',
-                    'levels'=>'error, warning',
-                ),
-                array(
-                    'class'=>'CWebLogRoute',
-                    'levels'=>'error, warning, trace, profile, info',
-                    'enabled'=>true,
-                ),
+//				array(
+//					'class'=>'CProfileLogRoute',
+//					'levels'=>'profile',
+//					'enabled'=>true,
+//				),
+				array(
+					'class'=>'application.extensions.yii-debug-toolbar.YiiDebugToolbarRoute',
+					'ipFilters'=>array('127.0.0.1'),
+				),
+//                array(
+//                    'class'=>'CWebLogRoute',
+//                    'levels'=>'error, warning',
+//                    'enabled'=>true,
+//                ),
             ),
         ),
     ),

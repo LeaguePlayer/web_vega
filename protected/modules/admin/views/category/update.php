@@ -1,11 +1,11 @@
 <?php
 $this->breadcrumbs=array(
-	"Список категорий"=>array('list'),
+	"Список категорий"=>array('/admin/catalog/index', 'open_category' => $model->id),
 	'Редактирование',
 );
 
 $this->menu=array(
-	array('label'=>'Список', 'url'=>array('list')),
+	array('label'=>'Список', 'url'=>array('/admin/catalog/index', 'open_category' => $model->id)),
 );
 ?>
 

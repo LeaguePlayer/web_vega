@@ -269,6 +269,51 @@ class DCategoryTreeBehavior extends DCategoryBehavior
         return $resultArray;
     }
 
+
+
+//	public function getTreeList($sub = 0, $parent = 0)
+//	{
+//		$criteria = $this->getOwnerCriteria();
+//
+//		if (!$parent) {
+//			$parent = $this->getOwner()->getPrimaryKey();
+//		}
+//
+//		if ($parent)
+//			$criteria->compare($this->primaryKeyAttribute, $this->getChildsArray($parent));
+//
+//		$items = $this->cached($this->getOwner())->findAll($criteria);
+//
+//		$categories = array();
+//		foreach ($items as $item){
+//			$key = $item->{$this->parentAttribute} ? $item->{$this->parentAttribute} : 0;
+//			$categories[$key][] = $item;
+//		}
+//
+//		return array( $this->_getTreeListRecursive ($categories, $parent, $sub) );
+//	}
+//
+//	protected function _getTreeListRecursive($items, $parent, $sub) {
+//		if (!$parent)
+//			$parent = 0;
+//
+//		if (isset($items[$parent]) && $items[$parent]){
+//			foreach ($items[$parent] as $item){
+//				$resultArray = array(
+//					'id'=>$item->getPrimaryKey(),
+//					'text'=>$item->{$this->titleAttribute},
+//				);
+//				$subnodes = $sub ? $this->_getTreeListRecursive($items, $item->getPrimaryKey(), $sub - 1) : array();
+//				if ( !empty($subnodes) ) {
+//					$resultArray += array( 'children' => array($subnodes) );
+//				}
+//			}
+//		}
+//		return $resultArray;
+//	}
+
+
+
     /**
      * Finds model by path
      * @param string $path

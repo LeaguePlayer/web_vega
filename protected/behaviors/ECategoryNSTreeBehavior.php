@@ -80,4 +80,32 @@ class ECategoryNSTreeBehavior extends CActiveRecordBehavior
         }
         return $resultArray;
     }
+
+
+
+	public function getTreeList($sub = 3, $parent = null)
+	{
+		$owner = $this->getOwner();
+		if ( !$parent ) {
+			$parent = $owner->roots()->find();
+		}
+		if ( !$parent )
+			return array();
+
+		return array($this->_getTreeListRecursive($parent, $sub));
+	}
+
+	protected function _getTreeListRecursive($current, $sub) {
+		$resultArray = array();
+		$children = $current->children()->findAll();
+		foreach ( $children as $item ) {
+			$resultArray[$item->getPrimaryKey()] = array(
+					'id'=>$item->getPrimaryKey(),
+					'text'=>$item->{$this->titleAttribute},
+					'url'=>$item->{$this->urlAttribute},
+					'icon'=>$this->iconAttribute !== null ? $item->{$this->iconAttribute} : '',
+				) + ($sub ? array('nodes'=>$this->_getMenuListRecursive($item, $sub - 1)) : array());
+		}
+		return $resultArray;
+	}
 }

@@ -20,10 +20,19 @@ class SortAction extends AdminAction
                 'order'=>"sort ASC" ));
 
             $aValues = array_values( CHtml::listData($actualModels, 'id', 'sort') );
+			$prev = -1;
+			$resolveValues = array();
+			foreach ( $aValues as $key => $aValue ) {
+				if ( $aValue == $prev ) {
+					$aValue++;
+				}
+				$prev = $aValue;
+				$resolveValues[$key] = +$aValue;
+			}
 
             $i = 0;
             foreach ($_POST['items'] as $id) {
-                CActiveRecord::model($this->getModelName())->updateByPk($id, array('sort'=>$aValues[$i++]));
+                CActiveRecord::model($this->getModelName())->updateByPk($id, array('sort'=>$resolveValues[$i++]));
             }
         }
     }

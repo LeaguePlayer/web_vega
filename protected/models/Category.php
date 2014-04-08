@@ -4,7 +4,7 @@
 * This is the model class for table "{{categories}}".
 *
 * The followings are the available columns in table '{{categories}}':
-    * @property string $id
+    * @property integer $id
     * @property string $name
     * @property string $translit_name
     * @property integer $is_brand
@@ -43,6 +43,7 @@ class Category extends EActiveRecord
         return array(
             'children' => array(self::HAS_MANY, 'Category', 'parent_id'),
             'parent' => array(self::BELONGS_TO, 'Category', 'parent_id'),
+			'products' => array(self::HAS_MANY, 'Product', 'category_id'),
         );
     }
 
@@ -91,6 +92,7 @@ class Category extends EActiveRecord
                 'titleAttribute' => 'name',
                 'aliasAttribute' => 'translit_name',
                 'iconAttribute' => 'preview',
+				'requestPathAttribute' => 'url'
             )
         ));
     }
@@ -105,10 +107,10 @@ class Category extends EActiveRecord
         return Yii::app()->createUrl('category/view', array('url' => $this->translit_name));
     }
 
-    public function getLinkActive()
-    {
-        return $this->translit_name == $_GET['url'];
-    }
+//    public function getLinkActive()
+//    {
+//        return $this->translit_name == $_GET['url'];
+//    }
 
     public function search()
     {

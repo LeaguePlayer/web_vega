@@ -18,6 +18,8 @@ class EWebModule extends CWebModule
         if ( !isset($this->assetsUrl) )
         {
             $assetsPath = Yii::getPathOfAlias($this->getName().'.assets');
+			if ( !is_dir($assetsPath) )
+				return;
             $this->assetsUrl = Yii::app()->assetManager->publish($assetsPath, false, -1, $this->forceCopyAssets);
         }
         return $this->assetsUrl;
@@ -28,7 +30,7 @@ class EWebModule extends CWebModule
     {
         // Reset the front-end's client script because we don't want
         // both front-end styles being applied in this module.
-        Yii::app()->clientScript->reset();
+        // Yii::app()->clientScript->reset();
     }
 
 
