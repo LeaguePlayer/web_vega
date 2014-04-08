@@ -27,6 +27,8 @@ class SiteController extends FrontController
 	 */
 	public function actionIndex()
 	{
+		$this->layout = '//layouts/maintenanse';
+
         $criteria = new CDbCriteria();
         $criteria->order = 'sort';
         $criteria->addCondition('t.parent_id IS NULL OR t.parent_id=""');
