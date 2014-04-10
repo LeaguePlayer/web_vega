@@ -1,1 +1,1 @@
-<?= CHtml::textField("ProductAttributeValue[{$item['model']->id}]", $item['value'], $htmlOptions); ?>
+<?= CHtml::textField("ProductAttributeValue[{$item['model']->id}]", $item['value']); ?>

@@ -22,6 +22,13 @@ class VegaXMLParser extends SimpleXMLReader
     protected $_removed = 0;
 	protected $_pricetypes = array();
 
+	protected $_parse_categories; // Используется при разборе категории
+	protected $_start_depth; // Используется при разборе категории
+	protected $_prev_category_level; // Используется при разборе категории
+	protected $_prev_category_id; // Используется при разборе категории
+	protected $_category_parents; // Используется при разборе категории
+	protected $_category_parent_id; // Используется при разборе категории
+
 
 
     public function parse(&$stat_info = array())
@@ -55,6 +62,8 @@ class VegaXMLParser extends SimpleXMLReader
 
         $this->registerCallback('ProductsHierarchy', array($this, 'start_categories'), XMLREADER::ELEMENT);
         $this->registerCallback('ProductsHierarchy', array($this, 'finish_categories'), XMLREADER::END_ELEMENT);
+		$this->registerCallback('Folder', array($this, 'parse_category'), XMLREADER::ELEMENT);
+		$this->registerCallback('Folder', array($this, 'finish_category'), XMLREADER::END_ELEMENT);
 
         $this->registerCallback('Produtcts', array($this, 'start_products'), XMLREADER::ELEMENT);
         $this->registerCallback('Produtcts', array($this, 'finish_products'), XMLREADER::END_ELEMENT);
@@ -181,6 +190,7 @@ class VegaXMLParser extends SimpleXMLReader
 			$columns = array(
 				'guid' => (string)$attributes['GUID'],
 				'name' => (string)$attributes['Name'],
+				'code' => (string)$attributes['Code'],
 				'full_name' => (string)$attributes['FullName'],
 				'inn' => (string)$attributes['INN'],
 				'kpp' => (string)$attributes['KPP']
@@ -255,34 +265,54 @@ class VegaXMLParser extends SimpleXMLReader
     // Открывающий тэг <ProductsHierarchy>
     protected function start_categories($reader)
     {
-        $xml = $reader->expandSimpleXml();
-        $roots_xml_categories = $xml->children();
-        foreach ( $roots_xml_categories as $xml_category ) {
-            $this->parse_category($xml_category);
-        }
-        return true;
+		$this->_parse_categories = true;
+		$this->_start_depth = $reader->depth;
+		$this->_prev_category_level = 0;
+		$this->_prev_category_id = 0;
+		$this->_category_parent_id = 0;
+		$this->_category_parents = array();
+		return true;
     }
 
 
-    // Рекурсивная функция обработки категорий
-    protected function parse_category($xml_current, $parent_id = null, $current_level = 1)
+    // Функция обработки категорий
+    protected function parse_category($reader)
     {
-        $attributes = $xml_current->attributes();
-        $columns = array(
-            'guid' => (string)$attributes['GUID'],
-            'name' => (string)$attributes['Name'],
-            'is_brand' => ( (string)$attributes['IsBrand'] == 'true'),
-            'parent_id' => $parent_id,
-            'level' => $current_level
-        );
-        $columns['translit_name'] = SiteHelper::translit( $columns['name'] );
-        $id = $this->update('{{categories}}', $columns);
+		$xml = $reader->expandSimpleXml();
+		$attributes = $xml->attributes();
+		$level = $reader->depth - $this->_start_depth;
 
-        $children = $xml_current->children();
-        foreach ( $children as $xml_child ) {
-            $this->parse_category($xml_child, $id, $current_level + 1);
-        }
+		if ( $level > $this->_prev_category_level  ) {
+			array_push($this->_category_parents, $this->_prev_category_id);
+			$this->_category_parent_id = $this->_prev_category_id;
+		} else if ( $level < $this->_prev_category_level  ) {
+			array_pop($this->_category_parents);
+			$this->_category_parent_id = $this->_category_parents[ count($this->_category_parents) - 1 ];
+		}
+
+		$columns = array(
+			'guid' => (string)$attributes['GUID'],
+			'code' => (string)$attributes['Code'],
+			'name' => (string)$attributes['Name'],
+			'is_brand' => ( (string)$attributes['IsBrand'] == 'true'),
+			'parent_id' => $this->_category_parent_id,
+			'level' => $level
+		);
+		$columns['translit_name'] = SiteHelper::translit( $columns['name'] );
+		$id = $this->update('{{categories}}', $columns);
+
+		$this->_prev_category_level = $level;
+		$this->_prev_category_id = $id;
+
+		return true;
     }
+
+
+	// Закрывающий тег </Folder>
+	protected function finish_category($reader)
+	{
+		return true;
+	}
 
 
     // Закрывающий тэг </ProductsHierarchy>
@@ -290,6 +320,7 @@ class VegaXMLParser extends SimpleXMLReader
     {
 		// Пока не очищаем кэш категории, очистим после обработки товаров
         // unset($this->_cashe['{{categories}}']);
+		$this->_parse_categories = false;
         return true;
     }
 
@@ -317,11 +348,23 @@ class VegaXMLParser extends SimpleXMLReader
         $attributes = $xml->attributes();
 
 		if ( $this->_mode === self::MODE_INSERT_OR_UPDATE ) {
+			if ( $this->_parse_categories ) {					// Товар встретился в ветке ProductsHierarchy
+				$level = $reader->depth - $this->_start_depth;
+				if ( $level > $this->_prev_category_level ) { 	// Товар находится внутри предыдущей категории
+					$category_id = $this->_prev_category_id;
+				} else {										// Товар находится рядом с предыдущей категорией
+					$category_id = $this->_category_parent_id;
+				}
+			} else {
+				$category_id = $this->_cashe['{{categories}}'][(string)$attributes['ParentGUID']];
+			}
+
 			$columns = array(
 				'guid' => (string)$attributes['GUID'],
+				'code' => (string)$attributes['Code'],
 				'name' => (string)$attributes['Name'],
 				'full_name' => (string)$attributes['FullName'],
-				'category_id' => $this->_cashe['{{categories}}'][(string)$attributes['ParentGUID']],
+				'category_id' => $category_id,
 				'article' => (string)$attributes['Article'],
 				'description' => (string)$attributes['Description'],
 			);

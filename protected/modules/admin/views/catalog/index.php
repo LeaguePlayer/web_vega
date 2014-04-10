@@ -49,6 +49,11 @@
 					'filter' => $productFinder,
 					'columns' => array(
 						array(
+							'class' => 'ImageColumn',
+							'name' => 'img_sample',
+							'url' => 'array("/admin/product/update", "id" => $data->id) + '.$grid_view_params_expression
+						),
+						array(
 							'name' => 'name',
 							'type' => 'raw',
 							'value' => 'CHtml::link($data->name, array("/admin/product/update", "id" => $data->id) + '.$grid_view_params_expression.')',

@@ -34,9 +34,6 @@ class DCategoryTreeBehavior extends DCategoryBehavior
      */
     public function getChildsArray($parent=0)
     {
-        if ( !$parent )
-            $parent = $this->zeroValue;
-
         $parents = $this->processParents($parent);
 
         $this->cached();
@@ -514,4 +511,24 @@ class DCategoryTreeBehavior extends DCategoryBehavior
 
         return $this->cached($this->getOwner())->find($criteria);
     }
+
+
+	/**
+	 * Constructs full branch for current model
+	 * @return array
+	 */
+	public function getFullBranch()
+	{
+		$ids = array( $this->getOwner()->getPrimaryKey() );
+
+		$category = $this->getOwner();
+
+		$i = 10;
+
+		while ($i-- && $this->cached($category)->{$this->parentRelation}) {
+			$ids[] = $category->{$this->parentRelation}->getPrimaryKey();
+			$category = $category->{$this->parentRelation};
+		}
+		return $ids;
+	}
 }

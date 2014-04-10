@@ -25,7 +25,11 @@ $this->menu=array(
 			'type' => 'raw',
 			'value' => 'CHtml::link($data->title, array("update", "id" => $data->id))'
 		),
-		'field_type',
+		array(
+			'name' => 'field_type',
+			'type' => 'raw',
+			'value' => '$data->getFieldType()',
+		),
 		'defaultValue',
 		array(
 			'class'=>'bootstrap.widgets.TbButtonColumn',

@@ -9,18 +9,30 @@
 
 <?php echo $form->errorSummary($model); ?>
 
+<?php
+	//$warningText = "<b>Внимание!</b> У тех товаров данной категории, у которых какой-либо из атрибутов уже задан, этот атрибут перезаписан не будет";
+?>
 
-
-<div class='control-group'>
-    <?php echo CHtml::activeLabelEx($model, 'img_preview'); ?>
-    <?php echo $form->fileField($model,'img_preview', array('class'=>'span3')); ?>
-    <div class='img_preview'>
-        <?php if ( !empty($model->img_preview) ) echo TbHtml::imageRounded( $model->imgBehaviorPreview->getImageUrl('small') ) ; ?>
-        <span class='deletePhoto btn btn-danger btn-mini' data-modelname='Category' data-attributename='Preview' <?php if(empty($model->img_preview)) echo "style='display:none;'"; ?>><i class='icon-remove icon-white'></i></span>
-    </div>
-    <?php echo $form->error($model, 'img_preview'); ?>
-</div>
-<?php echo $form->textFieldControlGroup($model,'name',array('class'=>'span8','maxlength'=>255)); ?>
+<?php $this->widget('bootstrap.widgets.TbTabs', array(
+	'tabs' => array(
+		array(
+			'label' => 'Основные параметры',
+			'content' => $this->renderPartial('_rows', array(
+				'form'=>$form,
+				'model'=>$model,
+			), true),
+			'active' => true
+		),
+		array(
+			'label' => 'Атрибуты',
+			'content' => $this->renderPartial('_attributes', array(
+				'form'=>$form,
+				'model'=>$model,
+				'all_attrs'=>$all_attrs,
+			), true),
+		),
+	),
+)); ?>
 
 
 

@@ -25,18 +25,18 @@ class ProductAttribute extends CActiveRecord
 	public static function getFieldTypes()
 	{
 		return array(
-			self::FIELD_TYPE_STRING => 'textfield',
-			self::FIELD_TYPE_TEXT => 'textarea',
-			self::FIELD_TYPE_CHECKBOX => 'checkbox',
+			self::FIELD_TYPE_STRING => 'Строка',
+			self::FIELD_TYPE_TEXT => 'Текстовое поле',
+			self::FIELD_TYPE_CHECKBOX => 'Переключатель',
 			//self::FIELD_TYPE_RADIO => 'radio',
-			self::FIELD_TYPE_SELECT => 'select',
+			self::FIELD_TYPE_SELECT => 'Выпадающий список',
 		);
 	}
 
 	public function getFieldType()
 	{
 		$types = self::getFieldTypes();
-		return $types[$this->fie];
+		return $types[$this->field_type];
 	}
 
     public function tableName()
@@ -167,7 +167,7 @@ class ProductAttribute extends CActiveRecord
 
 	public function getDefaultValue()
 	{
-		if ( $this->field_type == 'textfield' || $this->field_type == 'textarea' ) {
+		if ( $this->field_type == self::FIELD_TYPE_STRING || $this->field_type == self::FIELD_TYPE_TEXT ) {
 			return $this->default;
 
 		}

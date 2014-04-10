@@ -11,7 +11,7 @@ class ProductController extends AdminController
 	{
 		$model = $this->loadModel('Product', $id);
 
-		$attrs = ProductAttribute::model()->findAll();
+		$attrs = $model->category->getAttrs();
 		// Строим массив полей
 		$items = array();
 		foreach ($attrs as $attr)
@@ -24,10 +24,18 @@ class ProductController extends AdminController
 		}
 
 		// Заполняю текущими значениями
-		$attrValues = $model->all_attribute_values;
+		$attrValues = $model->getAttrValues();
 		foreach ($attrValues as $attrValue) {
 			$items[$attrValue->attribute->alias]['value'] = $attrValue->value;
 			$items[$attrValue->attribute->alias]['disabled'] = false; // Включаю найденные у товары атрибуты в форме
+		}
+
+
+		if (isset($_POST['Product']['deletePhoto'])) {
+			$model->deletePhoto();
+			if ( Yii::app()->request->isAjaxRequest ) {
+				Yii::app()->end();
+			}
 		}
 
 

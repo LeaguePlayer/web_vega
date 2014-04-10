@@ -47,10 +47,12 @@ class Product extends EActiveRecord
 				'order'=>'attribute.sort ASC',
 				'with'=>'attribute',
 			),
-			'all_attribute_values' => array(self::HAS_MANY, 'ProductAttributeValue', 'product_id',
-				'order'=>'attribute.sort ASC',
-				'with'=>'attribute',
-			),
+//			'all_attribute_values' => array(self::HAS_MANY, 'ProductAttributeValue', 'product_id',
+//				'order'=>'attribute.sort ASC',
+//				'with'=>'attribute',
+//			),
+			'prices' => array(self::HAS_MANY, 'Price', 'product_id'),
+			'characteristics' => array(self::HAS_MANY, 'Characteristic', array('characteristic_id'=>'id'), 'through' => 'prices'),
         );
     }
 
@@ -62,14 +64,15 @@ class Product extends EActiveRecord
             'guid' => 'GUID товара',
             'article' => 'Артикул товара',
             'name' => 'Наименование товара',
-            'translit_name' => 'Translit Name',
+            'translit_name' => 'Идентификационное имя',
             'full_name' => 'Полное наименование товара',
             'description' => 'Описание товара',
             'category_id' => 'Ссылка на категорию',
             'sort' => 'Вес для сортировки',
             'create_time' => 'Дата создания',
             'update_time' => 'Дата последнего редактирования',
-			'img_sample' => 'Образец'
+			'img_sample' => 'Фото образца',
+			'characteristicsString' => 'Доступные ширины',
         );
     }
 
@@ -81,11 +84,11 @@ class Product extends EActiveRecord
 				'class' => 'application.behaviors.UploadableImageBehavior',
 				'attributeName' => 'img_sample',
 				'versions' => array(
-					'icon' => array(
-						'centeredpreview' => array(90, 90),
-					),
 					'small' => array(
-						'resize' => array(200, 180),
+						'resize' => array(50),
+					),
+					'normal' => array(
+						'resize' => array(200),
 					)
 				),
 			),
@@ -151,5 +154,61 @@ class Product extends EActiveRecord
 			$this->_url = Yii::app()->request->baseUrl . '/catalog/' . $this->category->getPath() . '/' . $this->id;
 
 		return $this->_url;
+	}
+
+
+	public function getCharacteristicsArray()
+	{
+		$out = array();
+		foreach ( $this->prices as $price ) {
+			$out[] = array(
+				'name' => $price->characteristic->name,
+				'price' => $price->value
+			);
+		}
+		return $out;
+	}
+
+	private $_ch_string;
+	public function getCharacteristicsString()
+	{
+		if ( $this->_ch_string === null ) {
+			$characteristics = array_map(function($el) {
+				return $el['name'].' - '.number_format($el['price'], 0, ',', ' ').' р';
+			}, $this->getCharacteristicsArray());
+			$this->_ch_string = implode('; ', $characteristics);
+		}
+		return $this->_ch_string;
+	}
+
+
+	private $_all_attrs_values;
+	public function getAttrValues()
+	{
+		if ( $this->_all_attrs_values === null ) {
+			$attr_ids = $this->category->getLinkedAttrs();
+			$criteria = new CDbCriteria();
+			$criteria->addInCondition('attribute_id', $attr_ids);
+			$criteria->compare('product_id', $this->id);
+			$criteria->with = 'attribute';
+			$this->_all_attrs_values = ProductAttributeValue::model()->findAll($criteria);
+		}
+		return $this->_all_attrs_values;
+	}
+
+
+	public function getAttrsDetailViewList($autoVisible=true)
+	{
+		$items = array();
+		$attrValues = $this->getAttrValues();
+		foreach ($attrValues as $attrValue)
+		{
+			$items[] = array(
+				'label'=>$attrValue->attribute->title,
+				'value'=>$attrValue->displayValue,
+//				'visible'=>$autoVisible ? $attrValue->value : 1,
+			);
+		}
+		return $items;
 	}
 }

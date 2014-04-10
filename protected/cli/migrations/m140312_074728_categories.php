@@ -17,6 +17,7 @@ class m140312_074728_categories extends CDbMigration
         $this->createTable('{{categories}}', array(
 			'id' => 'pk',
             'guid' => "varchar(40) UNIQUE COMMENT 'GUID категории'",
+            'code' => "varchar(20) COMMENT 'Код категории'",
 			'name' => "string COMMENT 'Наименование категории'",
 			'translit_name' => "string",
 			'is_brand' => "int(1) COMMENT 'Бренд?'",

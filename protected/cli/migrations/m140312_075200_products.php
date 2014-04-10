@@ -17,10 +17,12 @@ class m140312_075200_products extends CDbMigration
         $this->createTable('{{products}}', array(
             'id' => "pk",
             'guid' => "VARCHAR(40) UNIQUE COMMENT 'GUID товара'",
+            'code' => "VARCHAR(20) COMMENT 'Код товара'",
             'article' => "VARCHAR(40) COMMENT 'Артикул товара'",
             'name' => "string COMMENT 'Наименование товара'",
             'translit_name' => "string",
             'full_name' => "string COMMENT 'Полное наименование товара'",
+            'img_sample' => "string COMMENT 'Фото товара'",
             'description' => "text COMMENT 'Описание товара'",
             'category_id' => "VARCHAR(40) COMMENT 'Ссылка на категорию'",
 			'sort' => "integer COMMENT 'Вес для сортировки'",

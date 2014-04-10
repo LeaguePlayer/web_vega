@@ -44,6 +44,7 @@ class Category extends EActiveRecord
             'children' => array(self::HAS_MANY, 'Category', 'parent_id'),
             'parent' => array(self::BELONGS_TO, 'Category', 'parent_id'),
 			'products' => array(self::HAS_MANY, 'Product', 'category_id'),
+			'attrs_assoc' => array(self::HAS_MANY, 'CategoryAttribute', 'category_id'),
         );
     }
 
@@ -51,18 +52,18 @@ class Category extends EActiveRecord
     public function attributeLabels()
     {
         return array(
-            'id' => 'GUID категории',
+            'guid' => 'GUID категории',
             'name' => 'Наименование категории',
-            'translit_name' => 'Translit Name',
+            'translit_name' => 'Идентификационное имя',
             'is_brand' => 'Бренд?',
-            'level' => 'Level',
-            'parent_id' => 'Parent',
+            'level' => 'Вложенность',
             'img_preview' => 'Изображение',
-            'status' => 'Статус',
-            'sort' => 'Вес для сортировки',
-            'create_time' => 'Дата создания',
-            'update_time' => 'Дата последнего редактирования',
-        );
+			'status' => 'Статус',
+			'sort' => 'Вес для сортировки',
+			'create_time' => 'Дата создания',
+			'update_time' => 'Дата последнего редактирования',
+			'parent.name' => 'Родительская категория',
+		);
     }
 
 
@@ -151,4 +152,57 @@ class Category extends EActiveRecord
             'translit_name' => $url
         ));
     }
+
+
+	private $_attrs_assoc;
+	public function getLinkedAttrs()
+	{
+		if ( $this->_attrs_assoc === null ) {
+			$this->_attrs_assoc = array();
+			// Полный путь от текущей категории до родительской
+			$pathBranch = $this->getFullBranch();
+			// Ищем среди этой и родительских категориях те, к которым уже привязаны атрибуты
+			$criteria = new CDbCriteria();
+			$criteria->addInCondition('category_id', $pathBranch);
+			$attr_types = Yii::app()->db->createCommand()
+				->select('category_id, attribute_id')
+				->from('{{category_attributes}}')
+				->where($criteria->condition, $criteria->params)
+				->order('category_id')
+				->queryAll();
+
+			$attr_ids = array();
+			$find_category = false;
+			foreach ( $pathBranch as $category_id ) {
+				foreach ( $attr_types as $type ) {
+					if ( $category_id == $type['category_id'] ) {
+						$attr_ids[] = $type['attribute_id'];
+						$find_category = true;
+					}
+				}
+				if ( $find_category ) break;
+			}
+
+			$criteria = new CDbCriteria();
+			$criteria->addInCondition('id', $attr_ids);
+			$this->_attrs_assoc = ProductAttribute::model()->findAll($criteria);
+
+
+			$this->_attrs_assoc = $attr_ids;
+		}
+		return $this->_attrs_assoc;
+	}
+
+	private $_attrs;
+	public function getAttrs()
+	{
+		if ( $this->_attrs === null ) {
+			$this->_attrs = array();
+			$attr_ids = $this->getLinkedAttrs();
+			$criteria = new CDbCriteria();
+			$criteria->addInCondition('id', $attr_ids);
+			$this->_attrs = ProductAttribute::model()->findAll($criteria);
+		}
+		return $this->_attrs;
+	}
 }

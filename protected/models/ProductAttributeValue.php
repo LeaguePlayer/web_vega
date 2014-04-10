@@ -66,4 +66,18 @@ class ProductAttributeValue extends CActiveRecord
     {
         return parent::model($className);
     }
+
+	private $_value;
+	public function getDisplayValue()
+	{
+		if ( $this->_value === null ) {
+			if ( $this->attribute->field_type == ProductAttribute::FIELD_TYPE_STRING || $this->attribute->field_type == ProductAttribute::FIELD_TYPE_TEXT ) {
+				$this->_value = $this->value ? $this->value : $this->attribute->default;
+			} else {
+				$variants = $this->attribute->decodeVariants();
+				$this->_value = $variants[$this->value];
+			}
+		}
+		return $this->_value;
+	}
 }
