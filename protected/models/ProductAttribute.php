@@ -22,6 +22,9 @@ class ProductAttribute extends CActiveRecord
 	const FIELD_TYPE_SELECT = 'select';
 
 
+	public $field_type = self::FIELD_TYPE_STRING;
+
+
 	public static function getFieldTypes()
 	{
 		return array(
@@ -150,16 +153,10 @@ class ProductAttribute extends CActiveRecord
 	public function decodeVariants()
 	{
 		if ( $this->_variants === null ) {
-			$parts = explode('|', $this->variants);
-			$out = array();
-			foreach ( $parts as $part ) {
-				$pair = explode('=', $part);
-				if ( !empty($pair) ) {
-					$key = trim($pair[0]);
-					$out[$key] = trim($pair[1]);
-				}
+			$this->_variants = CJSON::decode( $this->variants );
+			if ( !$this->_variants ) {
+				$this->_variants = array();
 			}
-			$this->_variants = $out;
 		}
 		return $this->_variants;
 	}
