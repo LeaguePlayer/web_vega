@@ -29,6 +29,7 @@
         }
         variant_values[counter++] = input.val();
       }
+      variants_input.val(JSON.stringify(variant_values));
       default_input = $('#ProductAttribute_default');
       default_val = default_input.val() || 0;
       if (default_input.is('select')) {
@@ -80,8 +81,7 @@
       return false;
     });
     return variants_block.add(checkbox_variants_rows).on('keyup', '.control-row input', function(e) {
-      update_variants();
-      return variants_input.val(JSON.stringify(variant_values));
+      return update_variants();
     });
   });
 
